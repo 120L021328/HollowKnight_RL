@@ -2,6 +2,7 @@ import gym
 import torch
 import psutil
 from torch.backends import cudnn
+from torchsummary import summary
 
 import hkenv
 import models
@@ -63,6 +64,7 @@ def main():
     # env = hkenv.HKEnv((160, 160), rgb=False, gap=0.165, w1=0.8, w2=0.8, w3=-0.0001)
     env = hkenv.HKEnvV2((192, 192), rgb=False, gap=0.17, w1=0.8, w2=0.5, w3=-8e-5)
     m = get_model(env, n_frames)
+    #summary(m,input_size=())
     replay_buffer = buffer.MultistepBuffer(180000, n=10, gamma=0.99, prioritized=None)
                                            # prioritized={
                                            #     'alpha': 0.5,

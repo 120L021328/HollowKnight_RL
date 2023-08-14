@@ -85,7 +85,7 @@ class HKEnv(gym.Env):
         :param w3: the weight of positive reward when not hitting nor being hit
                 (for example, w3=-0.0001 means give -0.0001 reward when neither happens
         """
-        self.monitor = self._find_window()
+        # self.monitor = self._find_window()
         self.holding = []
         self.prev_knight_hp = None
         self.prev_enemy_hp = None

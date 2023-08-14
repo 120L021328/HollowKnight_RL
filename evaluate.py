@@ -16,19 +16,31 @@ def get_model(env: gym.Env, n_frames: int):
     m = models.SimpleExtractor(shape, n_frames * c)
     m = models.DuelingMLP(m, env.action_space.n, noisy=True)
     m = m.to(DEVICE)
+    print(m)
     # modify below path to the weight file you have
-    m.load_state_dict(torch.load('saved/1673754862HornetPER/bestmodel.pt'))
+    tl = torch.load('saved/1673754862HornetPER/bestmodel.pt')
+    # tl = torch.load('saved/1673754862HornetPER/latestoptimizer.pt')
+    print(tl.keys())
+    # print(tl.values())
+    # for k, v in m.named_parameters():
+    #     print(k, v.shape)
+    # for k, v in tl.items():
+    #     print(k, v.shape)
+    missing, unexpected = m.load_state_dict(tl)
+    print(missing, unexpected)
     return m
 
 
 def evaluate(dqn):
     for _ in range(5):
         rew = dqn.evaluate()
+        print("rewards: %f" % rew)
 
 
 def main():
     n_frames = 4
-    env = hkenv.HKEnv((160, 160), rgb=False, gap=0.165, w1=1, w2=1, w3=0)
+    # env = hkenv.HKEnv((160, 160), rgb=False, gap=0.165, w1=1, w2=1, w3=0)
+    env = hkenv.HKEnv((192, 192), rgb=False, gap=0.165, w1=1, w2=1, w3=0)
     m = get_model(env, n_frames)
     replay_buffer = buffer.MultistepBuffer(100000, n=10, gamma=0.99)
     dqn = trainer.Trainer(env=env, replay_buffer=replay_buffer,
