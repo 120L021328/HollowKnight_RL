@@ -15,11 +15,13 @@ def get_model(env: gym.Env, n_frames: int):
     c, *shape = env.observation_space.shape
     m = models.SimpleExtractor(shape, n_frames * c)
     m = models.DuelingMLP(m, env.action_space.n, noisy=True)
+
     m = m.to(DEVICE)
-    print(m)
+
     # modify below path to the weight file you have
     tl = torch.load('saved/1673754862HornetPER/bestmodel.pt')
     # tl = torch.load('saved/1673754862HornetPER/latestoptimizer.pt')
+
     print(tl.keys())
     # print(tl.values())
     # for k, v in m.named_parameters():

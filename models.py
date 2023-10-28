@@ -294,10 +294,15 @@ class DuelingMLP(AbstractFullyConnected):
     def __init__(self, extractor: AbstractExtractor, n_out: int,
                  activation='relu', noisy=False, sn=False):
         super(DuelingMLP, self).__init__(extractor, n_out, activation, noisy, sn)
-        self.linear_val = self.linear_cls(extractor.units, 512)
-        self.linear_adv = self.linear_cls(extractor.units, 512)
-        self.val = self.linear_cls(512, 1)
-        self.adv = self.linear_cls(512, n_out)
+        # self.linear_val = self.linear_cls(extractor.units, 512)
+        # self.linear_adv = self.linear_cls(extractor.units, 512)
+        # self.val = self.linear_cls(512, 1)
+        # self.adv = self.linear_cls(512, n_out)
+
+        self.linear_val = self.linear_cls(extractor.units, 320)
+        self.linear_adv = self.linear_cls(extractor.units, 320)
+        self.val = self.linear_cls(320, 1)
+        self.adv = self.linear_cls(320, n_out)
 
         if sn:
             self.linear_val = spectral_norm(self.linear_val)
