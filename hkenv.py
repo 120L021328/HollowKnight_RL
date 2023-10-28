@@ -52,12 +52,12 @@ class HKEnv(gym.Env):
         Move.HOLD_RIGHT: 'd',
         # Move.LOOK_LEFT: 'a',
         # Move.LOOK_RIGHT: 'd',
-        Displacement.TIMED_SHORT_JUMP: 'space',
-        Displacement.TIMED_LONG_JUMP: 'space',
-        # Displacement.DASH: 'k',
+        Displacement.TIMED_SHORT_JUMP: 'k',
+        Displacement.TIMED_LONG_JUMP: 'k',
+        # Displacement.DASH: 'l',
         Attack.ATTACK: 'j',
         # Attack.UP_ATTACK: ('w', 'j'),
-        # Attack.SPELL: 'q'
+        # Attack.SPELL: 'u'
     }
     REWMAPS = {  # map each action to its corresponding reward
         Move.HOLD_LEFT: 0,
@@ -85,7 +85,7 @@ class HKEnv(gym.Env):
         :param w3: the weight of positive reward when not hitting nor being hit
                 (for example, w3=-0.0001 means give -0.0001 reward when neither happens
         """
-        # self.monitor = self._find_window()
+        self.monitor = self._find_window()
         self.holding = []
         self.prev_knight_hp = None
         self.prev_enemy_hp = None
@@ -132,8 +132,7 @@ class HKEnv(gym.Env):
         geo = None
         conf = 0.9995
         while geo is None:
-            geo = pyautogui.locateOnScreen('./locator/geo.png',
-                                           confidence=conf)
+            geo = pyautogui.locateOnScreen('./locator/geo.png', confidence=conf)
             conf = max(0.92, conf * 0.999)
             time.sleep(0.1)
         loc = {
@@ -317,7 +316,7 @@ class HKEnv(gym.Env):
                 break
             pyautogui.press('w')
             time.sleep(0.75)
-        pyautogui.press('space')
+        pyautogui.press('k')
 
         # wait for loading screen
         ready = False

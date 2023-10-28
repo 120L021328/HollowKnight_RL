@@ -22,13 +22,13 @@ def get_model(env: gym.Env, n_frames: int):
     tl = torch.load('saved/1673754862HornetPER/bestmodel.pt')
     # tl = torch.load('saved/1673754862HornetPER/latestoptimizer.pt')
 
-    print(tl.keys())
     # print(tl.values())
     # for k, v in m.named_parameters():
     #     print(k, v.shape)
     # for k, v in tl.items():
     #     print(k, v.shape)
-    missing, unexpected = m.load_state_dict(tl)
+    missing, unexpected = m.load_state_dict(tl, strict=False)
+
     print(missing, unexpected)
     return m
 
