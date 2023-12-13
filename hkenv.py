@@ -411,8 +411,7 @@ class HKEnvV2(HKEnv):
             reward += self.w3
 
         if win:  # extra reward for winning based on conditions
-            time_rew = 5. / (time.time() - self._episode_time)
-            reward += knight_hp / 40. + time_rew
+            reward += knight_hp / 45.
         elif lose:
             reward -= enemy_hp / 5.
 
@@ -425,7 +424,7 @@ class HKEnvV2(HKEnv):
             self.prev_knight_hp = knight_hp
             self.prev_enemy_hp = enemy_hp
         reward = np.clip(reward, -1.5, 1.5)
-        return obs, reward, done, False, None
+        return obs, reward, done, False, win
 
 
 class HKEnvSurvive(HKEnv):

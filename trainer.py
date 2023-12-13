@@ -266,7 +266,7 @@ class Trainer:
             else:
                 model_input = np.concatenate(obs_tuple, dtype=np.float32)
                 action = self.get_action(model_input)
-            obs_next, rew, done, _, _ = self.env.step(action)
+            obs_next, rew, done, _, w = self.env.step(action)
             total_rewards += rew
             self.steps += 1
             if cache:
@@ -296,7 +296,7 @@ class Trainer:
         if cache:
             self._save_transitions(obs_lst, action_lst, rew_lst, done_lst, save_loc)
         avg_loss = total_loss / learned_times if learned_times > 0 else 0
-        return total_rewards, avg_loss, self.optimizer.param_groups[0]['lr']
+        return total_rewards, avg_loss, self.optimizer.param_groups[0]['lr'], w
 
     def run_episodes(self, n, **kwargs):
         for _ in range(n):

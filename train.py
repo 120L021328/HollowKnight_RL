@@ -31,13 +31,20 @@ def train(dqn):
 
     saved_rew = float('-inf')
     saved_train_rew = float('-inf')
-    for i in range(1, 550):
+
+    win_episode = []
+    best_train_update = []
+    best_update = []
+    for i in range(1, 600):
         print('episode', i)
-        rew, loss, lr = dqn.run_episode()
+        rew, loss, lr, w = dqn.run_episode()
+        if w:
+            win_episode.append(i)
         if rew > saved_train_rew and dqn.eps < 0.11:
             print('new best train model found')
             saved_train_rew = rew
             dqn.save_models('besttrain', online_only=True)
+            best_train_update.append(i)
         if i % 10 == 0:
             dqn.run_episode(random_action=True)
 
@@ -48,6 +55,7 @@ def train(dqn):
                     print('new best eval model found')
                     saved_rew = eval_rew
                     dqn.save_models('best', online_only=True)
+                    best_update.append(i)
         dqn.save_models('latest', online_only=True)
 
         dqn.log({'reward': rew, 'loss': loss, 'total steps': dqn.steps}, i)
@@ -56,6 +64,9 @@ def train(dqn):
               f'total memory usage {psutil.virtual_memory().percent}%', sep='\n')
         print()
     dqn.save_models('latest', online_only=False)
+    print(win_episode)
+    print(best_update)
+    print(best_train_update)
 
 
 def main():
@@ -72,7 +83,7 @@ def main():
 
     dqn = trainer.Trainer(env=env, replay_buffer=replay_buffer,
                           n_frames=n_frames, gamma=0.99, eps=0.1,
-                          eps_func=(lambda val, step: 100. / step),
+                          eps_func=(lambda val, step: 1000. / step),
                           target_steps=8000,
                           learn_freq=4,
                           model=m,

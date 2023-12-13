@@ -20,8 +20,8 @@ def get_model(env: gym.Env, n_frames: int):
 
     # modify below path to the weight file you have
     # tl = torch.load('saved/1673754862HornetPER/bestmodel.pt')
-    tl = torch.load('saved/1702297388HornetV2/bestonline.pt')
-    # tl = torch.load('saved/1673754862HornetPER/latestoptimizer.pt')
+    # tl = torch.load('saved/1702297388HornetV2/bestonline.pt')
+    tl = torch.load('saved/1702351970HornetV2/latestoptimizer.pt')
 
     # print(tl.values())
     # for k, v in m.named_parameters():
