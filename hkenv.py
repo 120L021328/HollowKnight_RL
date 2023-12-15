@@ -74,8 +74,7 @@ class HKEnv(gym.Env):
     HP_CKPT = np.array([52, 91, 129, 169, 207, 246, 286, 324, 363], dtype=int)
     ACTIONS = [Move, Attack, Displacement]
 
-    def __init__(self, obs_shape=(160, 160), rgb=False, gap=0.165,
-                 w1=.8, w2=.8, w3=-0.0001):
+    def __init__(self, obs_shape=(160, 160), rgb=False, gap=0.165, w1=.8, w2=.8, w3=-0.0001):
         """
         :param obs_shape: the shape of observation returned by step and reset
         :param w1: the weight of negative reward when being hit

@@ -8,25 +8,38 @@
    - latestonline 最后一次训练结果，在训练中中途退出也是会保留的，下面两个不会
    - latestoptimizer 最后一次训练的optimizer结果
    - latesttarget0 最后一次训练的target_model结果
-2. Trainer中，有属性model、target_model、optimizer
-   - model 继承自nn.Module的类，有state_dict存参数
-   - target_model 设置target个数，可以实现Averaged-DQN，默认是1就无用
-   - optimizer torch.optim.NAdam
-3. 测试与训练的区别：noise的设定，测试时无
+2. 游戏环境的区别：
+   - 额
+3. 代码版本的区别：
+4. 测试与训练的区别：noise的设定，测试时无
+5. buffer是一个双端队列
 
 ### ISSUE
 
-1. 图像怎么输入的，貌似是取屏幕的固定位置的像素？
-2. LOSS的断层式增大，有可能是因为选择了新的best model？
+1. V2环境的改变？
+2. exploration的存储？
+3. 图像怎么输入的？貌似是取屏幕的固定位置的像素？
+4. LOSS的断层式增大？
+5. replay buffer？
+6. Q的更新周期是？每次动作？learning frequency？
+7. 如何寻找best model？（要最稳定、胜率最高而不是某次reward最大
+8. V2比PER的改变？
+9. double DQN？SVEA。。。
+10. init后半段代码作用？
 
 ### TODO
 
-1. 改reward函数，删除时间的奖励
-2. 增加对于胜利次数和分布的显示
-3. 增加best更新时，记录下更新位置
+1. ~~改reward函数，删除时间的奖励，先只追求成功率，后期再考虑速度~~
+2. ~~增加对于胜利次数和分布的显示~~
+3. ~~增加best更新时，记录下更新位置~~
+4. 比较hornet分支下的代码与当前区别并保留效果好的：buffer最后两个函数
+5. 保存loss最小的模型
+6. 拓展动作状态空间，加入冲刺
 
 ### LOG
 
-1. 388 效果最好的一次，550次迭代、使用epsilon decay函数为100 / steps
-2. 970 改为1000次迭代，函数也改为1000 / steps
-3. 
+1. 630 原版代码
+2. 015 加上赢输奖励，没有太大提升，仍然几乎是闭眼乱打，守株待兔一直冲墙砍，可能是过拟合
+3. 388 效果最好的一次，550次迭代、使用epsilon decay函数为100 / steps
+4. 970 改为1000次迭代，函数也改为1000 / steps
+5. 909 实现了1 2 3，但是没找到LOSS不降反升的原因
