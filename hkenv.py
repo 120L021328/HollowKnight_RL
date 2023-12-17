@@ -305,7 +305,7 @@ class HKEnv(gym.Env):
             self.prev_knight_hp = knight_hp
             self.prev_enemy_hp = enemy_hp
         reward = np.clip(reward, -1.5, 1.5)
-        return obs, reward, done, False, None
+        return obs, reward, done, False, win
 
     def reset(self, seed=None, options=None):
         super(HKEnv, self).reset(seed=seed)
@@ -396,7 +396,7 @@ class HKEnvV2(HKEnv):
         done = win or lose
 
         if win:
-            # lose = False
+            lose = False
             enemy_hp = 0.
         hurt = knight_hp < self.prev_knight_hp
         hit = enemy_hp < self.prev_enemy_hp

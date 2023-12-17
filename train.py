@@ -71,8 +71,8 @@ def train(dqn):
 
 def main():
     n_frames = 4
-    # env = hkenv.HKEnv((160, 160), rgb=False, gap=0.165, w1=0.8, w2=0.8, w3=-0.0001)
-    env = hkenv.HKEnvV2((192, 192), rgb=False, gap=0.17, w1=0.8, w2=0.5, w3=-8e-5)
+    env = hkenv.HKEnv((160, 160), rgb=False, gap=0.165, w1=0.8, w2=0.8, w3=-0.0001)
+    # env = hkenv.HKEnvV2((192, 192), rgb=False, gap=0.17, w1=0.8, w2=0.5, w3=-8e-5)
     m = get_model(env, n_frames)
     replay_buffer = buffer.MultistepBuffer(180000, n=10, gamma=0.99, prioritized=None)
                                            # prioritized={
@@ -94,10 +94,10 @@ def main():
                           device=DEVICE,
                           is_double=True,
                           drq=True,
-                          svea=True,
+                          svea=False,
                           reset=0,  # no reset
                           n_targets=1,
-                          save_suffix='HornetV2',
+                          save_suffix='Hornet',
                           no_save=False)
     train(dqn)
 
