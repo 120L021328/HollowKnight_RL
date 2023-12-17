@@ -82,8 +82,8 @@ def main():
                                            # })
 
     dqn = trainer.Trainer(env=env, replay_buffer=replay_buffer,
-                          n_frames=n_frames, gamma=0.99, eps=1.,
-                          eps_func=(lambda val, step: 1000. / step),
+                          n_frames=n_frames, gamma=0.99, eps=0,
+                          eps_func=(lambda val, step: 0),
                           target_steps=8000,
                           learn_freq=4,
                           model=m,
