@@ -317,14 +317,14 @@ class Trainer:
             obs_tuple = tuple(stacked_obs)
             model_input = np.concatenate(obs_tuple, dtype=np.float32)
             action = self.get_action(model_input)
-            obs_next, rew, done, _, _ = self.env.step(action)
+            obs_next, rew, done, _, w = self.env.step(action)
             rewards += rew
             stacked_obs.append(obs_next)
             if done:
                 break
         self.model.noise_mode(True)
-        print('eval reward', rewards)
-        return rewards
+        # print('eval reward', rewards)
+        return rewards, w
 
     def learn(self):  # update with a given batch
         """

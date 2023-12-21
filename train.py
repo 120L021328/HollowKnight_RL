@@ -49,7 +49,7 @@ def train(dqn):
             dqn.run_episode(random_action=True)
 
             if i >= 100:
-                eval_rew = dqn.evaluate()
+                eval_rew, _ = dqn.evaluate()
 
                 if eval_rew > saved_rew:
                     print('new best eval model found')

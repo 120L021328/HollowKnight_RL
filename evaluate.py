@@ -11,7 +11,7 @@ DEVICE = 'cuda'
 cudnn.benchmark = True
 
 
-def get_model(env: gym.Env, n_frames: int):
+def get_model(env: gym.Env, n_frames: int, file_path):
     c, *shape = env.observation_space.shape
     m = models.SimpleExtractor(shape, n_frames * c)
     m = models.DuelingMLP(m, env.action_space.n, noisy=True)
@@ -21,31 +21,24 @@ def get_model(env: gym.Env, n_frames: int):
     # modify below path to the weight file you have
     # tl = torch.load('saved/1673754862HornetPER/bestmodel.pt')
     # tl = torch.load('saved/1702297388HornetV2/bestonline.pt')
-    tl = torch.load('saved/1702722179Hornet/besttrainonline.pt')
+    # tl = torch.load('saved/1702722179Hornet/besttrainonline.pt')
+    tl = torch.load(file_path)
 
-    # print(tl.values())
-    # for k, v in m.named_parameters():
-    #     print(k, v.shape)
-    # for k, v in tl.items():
-    #     print(k, v.shape)
     missing, unexpected = m.load_state_dict(tl, strict=False)
-
-    print(missing, unexpected)
+    if len(missing):
+        print('miss:', missing)
+    if len(unexpected):
+        print('unexpected:', unexpected)
     return m
 
 
-def evaluate(dqn):
-    for _ in range(5):
-        rew = dqn.evaluate()
-        print("rewards: %f" % rew)
-
-
-def main():
+def main(p):
+    n = 100  # test times
     n_frames = 4
     env = hkenv.HKEnv((160, 160), rgb=False, gap=0.165, w1=1, w2=1, w3=0)
     # env = hkenv.HKEnv((192, 192), rgb=False, gap=0.165, w1=1, w2=1, w3=0)
     # env = hkenv.HKEnvV2((192, 192), rgb=False, gap=0.17, w1=0.8, w2=0.5, w3=-8e-5)
-    m = get_model(env, n_frames)
+    m = get_model(env, n_frames, p)
     replay_buffer = buffer.MultistepBuffer(100000, n=10, gamma=0.99)
     dqn = trainer.Trainer(env=env, replay_buffer=replay_buffer,
                           n_frames=n_frames, gamma=0.99, eps=0.,
@@ -63,8 +56,21 @@ def main():
                           svea=False,
                           reset=0,
                           no_save=True)
-    evaluate(dqn)
+
+    total_reward = 0
+    total_win = 0
+    for i in range(n):
+        rew, w = dqn.evaluate()
+        total_reward += rew
+        if w:
+            total_win += 1
+        if i % 10 == 9:
+            print('finished %d times' % (i+1))
+    average_rew = total_reward / n
+    print("rewards: %f, win times: %d" % (average_rew, total_win))
 
 
 if __name__ == '__main__':
-    main()
+    main('saved/1702722179Hornet/bestonline.pt')
+    main('saved/1702905513Hornet/besttrainonline.pt')
+    main('saved/1702905513Hornet/bestonline.pt')

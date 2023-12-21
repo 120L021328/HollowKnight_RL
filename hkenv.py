@@ -448,4 +448,4 @@ class HKEnvSurvive(HKEnv):
 
         rew = (-self.w1) if hurt else (knight_hp / 18. + 0.4)
         rew = np.clip(rew, -1.5, 1.5)
-        return obs, rew, done, False, None
+        return obs, rew, done, False, win
