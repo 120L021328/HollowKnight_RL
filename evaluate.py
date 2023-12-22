@@ -9,9 +9,13 @@ import buffer
 
 DEVICE = 'cuda'
 cudnn.benchmark = True
+test_path_list = ['saved/1703164894SW/besttrainonline.pt',
+                  'saved/1702819178SW/besttrainonline.pt',
+                  'saved/1703164894SW/bestonline.pt',
+                  'saved/1702819178SW/bestonline.pt']
 
 
-def get_model(env: gym.Env, n_frames: int, file_path):
+def get_model(env: gym.Env, n_frames: int, file_path=''):
     c, *shape = env.observation_space.shape
     m = models.SimpleExtractor(shape, n_frames * c)
     m = models.DuelingMLP(m, env.action_space.n, noisy=True)
@@ -71,6 +75,5 @@ def main(p):
 
 
 if __name__ == '__main__':
-    main('saved/1702722179Hornet/bestonline.pt')
-    main('saved/1702905513Hornet/besttrainonline.pt')
-    main('saved/1702905513Hornet/bestonline.pt')
+    for path in test_path_list:
+        main(path)
