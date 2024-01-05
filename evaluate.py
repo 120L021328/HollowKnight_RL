@@ -9,9 +9,9 @@ import buffer
 
 DEVICE = 'cuda'
 cudnn.benchmark = True
-test_path_list = ['saved/1703164894SW/besttrainonline.pt',
+test_path_list = ['saved/1703249164SW/besttrainonline.pt',
                   'saved/1702819178SW/besttrainonline.pt',
-                  'saved/1703164894SW/bestonline.pt',
+                  'saved/1703249164SW/bestonline.pt',
                   'saved/1702819178SW/bestonline.pt']
 
 
