@@ -449,3 +449,42 @@ class HKEnvSurvive(HKEnv):
         rew = (-self.w1) if hurt else (knight_hp / 18. + 0.4)
         rew = np.clip(rew, -1.5, 1.5)
         return obs, rew, done, False, win
+
+
+if __name__ == '__main__':
+    window = pyautogui.getWindowsWithTitle('Hollow Knight')
+    assert len(window) == 1, f'found {len(window)} windows called Hollow Knight {window}'
+    window = window[0]
+    try:
+        window.activate()
+    except Exception:
+        window.minimize()
+        window.maximize()
+        window.restore()
+    window.moveTo(0, 0)
+
+    with mss() as sct:
+        monitor = {'left': 144, 'top': 35, 'width': 1020, 'height': 692}
+        frame = np.asarray(sct.grab(monitor), dtype=np.uint8)
+    print(frame)
+    obs = cv2.cvtColor(frame[:672, ...], cv2.COLOR_BGRA2GRAY)
+
+    print(obs)
+    cv2.imshow('y', obs)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+    observation_space = gym.spaces.Box(low=0, high=255, dtype=np.uint8, shape=(1,) + (160, 160))
+    obs = cv2.resize(obs, dsize=observation_space.shape[1:], interpolation=cv2.INTER_AREA)
+
+    cv2.imshow('x', obs)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    print(obs)
+
+    # make channel first
+    obs = obs[np.newaxis, ...]
+
+
+
+    print(obs)

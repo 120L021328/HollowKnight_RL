@@ -22,8 +22,9 @@
      - reward计算上，只关心自身剩余血量
 3. 代码版本的区别：
 4. observation space 完全通过图像获得
-   - game frame
-   - RAM states
+   - 对截图的处理：
+     - 先通过geo定位，然后截，但是**两侧截多了**，有效信息被截没了
+     - 然后压缩成指定大小的灰度图
 5. buffer是一个双端队列
 6. exploration和epsilon decay区别
 
