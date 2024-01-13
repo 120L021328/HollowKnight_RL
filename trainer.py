@@ -214,7 +214,7 @@ class Trainer:
         with torch.amp.autocast(self.device):
             obs = torch.as_tensor(obs,
                                   device=self.device).unsqueeze(0)
-            if len(obs.shape) == 4:
+            if len(obs.shape) == self.n_frames:
                 self._rescale(obs)
             pred = self.model(obs, adv_only=True).cpu().numpy()[0]
         return np.argmax(pred)
@@ -390,12 +390,13 @@ class Trainer:
             self._update_target(self._learn_since_replace % self.target_steps)
         return loss
 
-    def load_explorations(self, save_loc='./explorations/'):
+    def load_explorations(self, save_loc):
         """
         load all explorations from given environment into the replay buffer
 
         :param save_loc: directory where the explorations can be found
         """
+        save_loc = save_loc if len(save_loc) else self.save_loc + 'explorations/'
         assert not save_loc.endswith('\\')
         stats_imgs = []
         save_loc = save_loc if save_loc.endswith('/') else f'{save_loc}/'
@@ -425,7 +426,7 @@ class Trainer:
                 self.replay_buffer.add(obs_tuple, a, r, d, obs_next_tuple)
         print('loading complete, with buffer length', len(self.replay_buffer))
 
-    def save_explorations(self, n_episodes, save_loc='./explorations/'):
+    def save_explorations(self, n_episodes):
         """
         interact with environment n episodes with random agent, save locally
         please note that explorations are only effective
@@ -436,8 +437,11 @@ class Trainer:
         manually delete any explorations you do not want to keep
 
         :param n_episodes: number of explorations to be saved
-        :param save_loc: directory used to save
         """
+        save_loc = self.save_loc + 'explorations/'
+        if not os.path.exists(save_loc):
+            os.makedirs(save_loc)
+        print('save explorations at', self.save_loc)
         assert not save_loc.endswith('\\')
         save_loc = save_loc if save_loc.endswith('/') else f'{save_loc}/'
         for i in range(n_episodes):

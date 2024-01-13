@@ -29,10 +29,11 @@ def get_model(env: gym.Env, n_frames: int, file_path=''):
     return m
 
 
-def train(dqn):
+def train(dqn, old_path=''):
     print('training started')
-    dqn.save_explorations(75)
-    dqn.load_explorations()
+    if not len(old_path):
+        dqn.save_explorations(75)
+    dqn.load_explorations(old_path)
     # dqn.load_explorations('saved/1673839254HornetTweaks/transitions')
     # raise ValueError
     dqn.learn()  # warmup
@@ -78,11 +79,12 @@ def train(dqn):
 
 
 def main():
+    old_model_path = 'saved/1702722179Hornet/'
     n_frames = 4
     env = hkenv.HKEnv((160, 160), rgb=False, gap=0.165, w1=0.8, w2=0.8, w3=-0.0001)
     # env = hkenv.HKEnvV2((192, 192), rgb=False, gap=0.17, w1=0.8, w2=0.5, w3=-8e-5)
-    m = get_model(env, n_frames, 'saved/1702722179Hornet/bestonline.pt')
-    x = get_model(env, n_frames, )
+    # m = get_model(env, n_frames, old_model_path + 'bestonline.pt')
+    m = get_model(env, n_frames)
     replay_buffer = buffer.MultistepBuffer(180000, n=10, gamma=0.99, prioritized=None)
                                            # prioritized={
                                            #     'alpha': 0.5,
@@ -92,7 +94,7 @@ def main():
 
     dqn = trainer.Trainer(env=env, replay_buffer=replay_buffer,
                           n_frames=n_frames, gamma=0.99, eps=0,
-                          eps_func=(lambda val, step: 0),
+                          eps_func=(lambda val, step: 1000. / step),
                           target_steps=8000,
                           learn_freq=4,
                           model=m,
@@ -106,8 +108,9 @@ def main():
                           svea=False,
                           reset=0,  # no reset
                           n_targets=1,
-                          save_suffix='SW',
+                          save_suffix='Hornet',
                           no_save=False)
+    # train(dqn, old_model_path + 'explorations/')
     train(dqn)
 
 

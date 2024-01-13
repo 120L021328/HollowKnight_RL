@@ -30,15 +30,15 @@ class Move(Actions):
 class Attack(Actions):
     NO_OP = 0
     ATTACK = 1
-    # UP_ATTACK = 2
-    # SPELL = 3
+    UP_ATTACK = 2
+    SPELL = 3
 
 
 class Displacement(Actions):
     NO_OP = 0
     TIMED_SHORT_JUMP = 1
     TIMED_LONG_JUMP = 2
-    # DASH = 3
+    DASH = 3
 
 
 class HKEnv(gym.Env):
@@ -54,10 +54,10 @@ class HKEnv(gym.Env):
         # Move.LOOK_RIGHT: 'd',
         Displacement.TIMED_SHORT_JUMP: 'k',
         Displacement.TIMED_LONG_JUMP: 'k',
-        # Displacement.DASH: 'l',
+        Displacement.DASH: 'l',
         Attack.ATTACK: 'j',
-        # Attack.UP_ATTACK: ('w', 'j'),
-        # Attack.SPELL: 'u'
+        Attack.UP_ATTACK: ('w', 'j'),
+        Attack.SPELL: ('s', 'i')
     }
     REWMAPS = {  # map each action to its corresponding reward
         Move.HOLD_LEFT: 0,
@@ -66,10 +66,10 @@ class HKEnv(gym.Env):
         # Move.LOOK_RIGHT: 0,
         Displacement.TIMED_SHORT_JUMP: 0,
         Displacement.TIMED_LONG_JUMP: 0,
-        # Displacement.DASH: -1e-5,
+        Displacement.DASH: -1e-3,
         Attack.ATTACK: 0,
-        # Attack.UP_ATTACK: 0,
-        # Attack.SPELL: 0
+        Attack.UP_ATTACK: -1e-2,
+        Attack.SPELL: -1e-1
     }
     HP_CKPT = np.array([52, 91, 129, 169, 207, 246, 286, 324, 363], dtype=int)
     ACTIONS = [Move, Attack, Displacement]
@@ -451,7 +451,7 @@ class HKEnvSurvive(HKEnv):
         return obs, rew, done, False, win
 
 
-if __name__ == '__main__':
+def test():
     window = pyautogui.getWindowsWithTitle('Hollow Knight')
     assert len(window) == 1, f'found {len(window)} windows called Hollow Knight {window}'
     window = window[0]
@@ -465,26 +465,24 @@ if __name__ == '__main__':
 
     with mss() as sct:
         monitor = {'left': 144, 'top': 35, 'width': 1020, 'height': 692}
-        frame = np.asarray(sct.grab(monitor), dtype=np.uint8)
-    print(frame)
-    obs = cv2.cvtColor(frame[:672, ...], cv2.COLOR_BGRA2GRAY)
+        x = sct.grab(monitor)
+        frame = np.asarray(x, dtype=np.uint8)
 
-    print(obs)
-    cv2.imshow('y', obs)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    obs = cv2.cvtColor(frame[:672, ...], cv2.COLOR_BGRA2GRAY)
 
     observation_space = gym.spaces.Box(low=0, high=255, dtype=np.uint8, shape=(1,) + (160, 160))
     obs = cv2.resize(obs, dsize=observation_space.shape[1:], interpolation=cv2.INTER_AREA)
 
-    cv2.imshow('x', obs)
+    # make channel first
+    obs = obs[np.newaxis, ...]
+
+    print(obs.shape)
+
+    cv2.imshow('x', obs[0])
     cv2.waitKey(0)
     cv2.destroyAllWindows()
     print(obs)
 
-    # make channel first
-    obs = obs[np.newaxis, ...]
-
-
-
-    print(obs)
+from collections import deque
+if __name__ == '__main__':
+    test()
