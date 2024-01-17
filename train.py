@@ -2,6 +2,7 @@ import gym
 import torch
 import psutil
 from torch.backends import cudnn
+import numpy as np
 
 import hkenv
 import models
@@ -32,7 +33,7 @@ def get_model(env: gym.Env, n_frames: int, file_path=''):
 def train(dqn, old_path=''):
     print('training started')
     if not len(old_path):
-        dqn.save_explorations(75)
+        dqn.save_explorations(1)
     dqn.load_explorations(old_path)
     # dqn.load_explorations('saved/1673839254HornetTweaks/transitions')
     # raise ValueError
@@ -44,7 +45,7 @@ def train(dqn, old_path=''):
     win_episode = []
     best_train_update = []
     best_update = []
-    for i in range(1, 600):
+    for i in range(1, 2):
         print('episode', i)
         rew, loss, lr, w = dqn.run_episode()
         if w:
@@ -76,10 +77,13 @@ def train(dqn, old_path=''):
     print(win_episode)
     print(best_update)
     print(best_train_update)
+    np.savetxt(dqn.save_loc+'win_episode.txt', np.array(win_episode), '%d')
+    np.savetxt(dqn.save_loc + 'best_update.txt', np.array(best_update), '%d')
+    np.savetxt(dqn.save_loc + 'best_train_update.txt', np.array(best_train_update), '%d')
 
 
 def main():
-    old_model_path = 'saved/1702722179Hornet/'
+    # old_model_path = 'saved/1702722179Hornet/'
     n_frames = 4
     env = hkenv.HKEnv((160, 160), rgb=False, gap=0.165, w1=0.8, w2=0.8, w3=-0.0001)
     # env = hkenv.HKEnvV2((192, 192), rgb=False, gap=0.17, w1=0.8, w2=0.5, w3=-8e-5)
@@ -94,7 +98,7 @@ def main():
 
     dqn = trainer.Trainer(env=env, replay_buffer=replay_buffer,
                           n_frames=n_frames, gamma=0.99, eps=0,
-                          eps_func=(lambda val, step: 1000. / step),
+                          eps_func=(lambda val, step: 0.),
                           target_steps=8000,
                           learn_freq=4,
                           model=m,
@@ -108,7 +112,7 @@ def main():
                           svea=False,
                           reset=0,  # no reset
                           n_targets=1,
-                          save_suffix='Hornet',
+                          save_suffix='BM',
                           no_save=False)
     # train(dqn, old_model_path + 'explorations/')
     train(dqn)

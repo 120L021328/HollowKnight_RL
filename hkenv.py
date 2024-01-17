@@ -66,10 +66,10 @@ class HKEnv(gym.Env):
         # Move.LOOK_RIGHT: 0,
         Displacement.TIMED_SHORT_JUMP: 0,
         Displacement.TIMED_LONG_JUMP: 0,
-        Displacement.DASH: -1e-3,
-        Attack.ATTACK: 0,
-        Attack.UP_ATTACK: -1e-2,
-        Attack.SPELL: -1e-1
+        Displacement.DASH: 1e-3,
+        Attack.ATTACK: -1e-3,
+        Attack.UP_ATTACK: -1e-1,
+        Attack.SPELL: 1e-3
     }
     HP_CKPT = np.array([52, 91, 129, 169, 207, 246, 286, 324, 363], dtype=int)
     ACTIONS = [Move, Attack, Displacement]
