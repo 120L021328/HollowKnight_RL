@@ -136,16 +136,16 @@
 
 17. 实现了13
 
-    |                             | besttrain    | best         | besttrain(Ours) | best(Ours)   |
-    | --------------------------- | ------------ | ------------ | --------------- | ------------ |
-    | Massive Moss Charger 草团子 |              |              |                 |              |
-    | Crystal Guardian 白给守卫   |              |              |                 |              |
-    | False Knight 假骑士         |              |              |                 |              |
-    | Broken Vessel 大表哥        |              |              |                 |              |
-    | Hornet  小姐姐 224 870      | 13.488741 25 | 16.003566 29 | 17.423021 64    | 17.266478 51 |
-    | Soul Warrior灵魂战士        |              |              |                 |              |
-    | Elder Hu 胡长老             |              |              |                 |              |
-    | Brooding Mawlek毛里克       |              |              |                 |              |
-    | Mantis Loads三螳螂          |              |              |                 |              |
+    |                               | besttrain    | best         | besttrain(Ours) | best(Ours)   |
+    | ----------------------------- | ------------ | ------------ | --------------- | ------------ |
+    | Massive Moss Charger 草团子   |              |              |                 |              |
+    | Crystal Guardian 白给守卫     |              |              |                 |              |
+    | False Knight 假骑士           |              |              |                 |              |
+    | Broken Vessel 大表哥          |              |              |                 |              |
+    | Hornet  小姐姐 224 870        | 13.488741 25 | 16.003566 29 | 17.423021 64    | 17.266478 51 |
+    | Soul Warrior灵魂战士          |              |              |                 |              |
+    | Elder Hu 胡长老               |              |              |                 |              |
+    | Brooding Mawlek毛里克 744 946 | 26.950868 73 | 30.729855 94 | 28.564118 78    | 31.035190 93 |
+    | Mantis Loads三螳螂            |              |              |                 |              |
 
     

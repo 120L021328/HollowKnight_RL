@@ -33,7 +33,7 @@ def get_model(env: gym.Env, n_frames: int, file_path=''):
 def train(dqn, old_path=''):
     print('training started')
     if not len(old_path):
-        dqn.save_explorations(1)
+        dqn.save_explorations(800)
     dqn.load_explorations(old_path)
     # dqn.load_explorations('saved/1673839254HornetTweaks/transitions')
     # raise ValueError
@@ -45,7 +45,7 @@ def train(dqn, old_path=''):
     win_episode = []
     best_train_update = []
     best_update = []
-    for i in range(1, 2):
+    for i in range(1, 2001):
         print('episode', i)
         rew, loss, lr, w = dqn.run_episode()
         if w:
@@ -98,7 +98,7 @@ def main():
 
     dqn = trainer.Trainer(env=env, replay_buffer=replay_buffer,
                           n_frames=n_frames, gamma=0.99, eps=0,
-                          eps_func=(lambda val, step: 0.),
+                          eps_func=(lambda val, step: 10000. / step),
                           target_steps=8000,
                           learn_freq=4,
                           model=m,
