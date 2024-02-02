@@ -1,5 +1,6 @@
 playground*
 .idea
-saved/1*
+saved/1*/explorations
+saved/1*/*.pt
 **/__pycache__/
 **/*npy
