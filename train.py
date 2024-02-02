@@ -112,7 +112,7 @@ def main():
                           svea=False,
                           reset=0,  # no reset
                           n_targets=1,
-                          save_suffix='BM',
+                          save_suffix='FK',
                           no_save=False)
     # train(dqn, old_model_path + 'explorations/')
     train(dqn)
