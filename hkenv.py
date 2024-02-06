@@ -363,8 +363,8 @@ class HKEnv(gym.Env):
         gc.collect()
 
 
-# 毛里克的环境
-class HKEnvBM(HKEnv):
+# 大表哥的环境
+class HKEnvBV(HKEnv):
     REWMAPS = {  # map each action to its corresponding reward
         Move.HOLD_LEFT: 0,
         Move.HOLD_RIGHT: 0,
