@@ -256,6 +256,7 @@ class HKEnv(gym.Env):
         knight_hp = ((checkpoint1 > 200) | (checkpoint2 > 200)).sum()
         rgb = not force_gray and self.rgb
         obs = cv2.cvtColor(frame[:672, ...],
+
                            (cv2.COLOR_BGRA2RGB if rgb
                             else cv2.COLOR_BGRA2GRAY))
         obs = cv2.resize(obs,
@@ -362,6 +363,81 @@ class HKEnv(gym.Env):
         gc.collect()
 
 
+# 毛里克的环境
+class HKEnvBM(HKEnv):
+    REWMAPS = {  # map each action to its corresponding reward
+        Move.HOLD_LEFT: 0,
+        Move.HOLD_RIGHT: 0,
+        # Move.LOOK_LEFT: 0,
+        # Move.LOOK_RIGHT: 0,
+        Displacement.TIMED_SHORT_JUMP: 0,
+        Displacement.TIMED_LONG_JUMP: 0,
+        Displacement.DASH: 1e-3,
+        Attack.ATTACK: 1e-3,
+        Attack.UP_ATTACK: -1e-1,
+        Attack.SPELL: 1e-3
+    }
+
+
+# 白给守卫的环境
+class HKEnvCG(HKEnv):
+    REWMAPS = {  # map each action to its corresponding reward
+        Move.HOLD_LEFT: -1e-4,
+        Move.HOLD_RIGHT: -1e-4,
+        # Move.LOOK_LEFT: 0,
+        # Move.LOOK_RIGHT: 0,
+        Displacement.TIMED_SHORT_JUMP: -1e-1,
+        Displacement.TIMED_LONG_JUMP: 1e-3,
+        Displacement.DASH: -1e-1,
+        Attack.ATTACK: 1e-3,
+        Attack.UP_ATTACK: -1e-1,
+        Attack.SPELL: 1e-3
+    }
+
+    def observe(self, force_gray=False):
+        """
+        take a screenshot and identify enemy and knight's HP
+
+        :param force_gray: override self.rgb to force return gray obs
+        :return: observation (a resized screenshot), knight HP, and enemy HP
+        """
+        with mss() as sct:
+            frame = np.asarray(sct.grab(self.monitor), dtype=np.uint8)
+
+        knight_hp_bar = frame[64, :, 0]
+        checkpoint1 = knight_hp_bar[self.HP_CKPT]
+        checkpoint2 = knight_hp_bar[self.HP_CKPT - 1]
+        knight_hp = ((checkpoint1 > 200) | (checkpoint2 > 200)).sum()
+
+        if knight_hp == 0:
+            time.sleep(0.05)
+            with mss() as sct:
+                frame = np.asarray(sct.grab(self.monitor), dtype=np.uint8)
+            knight_hp_bar = frame[64, :, 0]
+            checkpoint1 = knight_hp_bar[self.HP_CKPT]
+            checkpoint2 = knight_hp_bar[self.HP_CKPT - 1]
+            knight_hp = ((checkpoint1 > 200) | (checkpoint2 > 200)).sum()
+
+        enemy_hp_bar = frame[-1, 187:826, :]
+        if (np.all(enemy_hp_bar[..., 0] == enemy_hp_bar[..., 1]) and
+                np.all(enemy_hp_bar[..., 1] == enemy_hp_bar[..., 2])):
+            # hp bar found
+            enemy_hp = (enemy_hp_bar[..., 0] < 3).sum() / len(enemy_hp_bar)
+        else:
+            enemy_hp = 1.
+
+        rgb = not force_gray and self.rgb
+        obs = cv2.cvtColor(frame[:672, ...],
+                           (cv2.COLOR_BGRA2RGB if rgb
+                            else cv2.COLOR_BGRA2GRAY))
+        obs = cv2.resize(obs,
+                         dsize=self.observation_space.shape[1:],
+                         interpolation=cv2.INTER_AREA)
+        # make channel first
+        obs = np.rollaxis(obs, -1) if rgb else obs[np.newaxis, ...]
+        return obs, knight_hp, enemy_hp
+
+
 class HKEnvV2(HKEnv):
     REWMAPS = {  # map each action to its corresponding reward
         Move.HOLD_LEFT: 0,
@@ -451,7 +527,8 @@ class HKEnvSurvive(HKEnv):
         return obs, rew, done, False, win
 
 
-def test():
+def test_input_img():
+    HP_CKPT = np.array([52, 91, 129, 169, 207, 246, 286, 324, 363], dtype=int)
     window = pyautogui.getWindowsWithTitle('Hollow Knight')
     assert len(window) == 1, f'found {len(window)} windows called Hollow Knight {window}'
     window = window[0]
@@ -468,21 +545,14 @@ def test():
         x = sct.grab(monitor)
         frame = np.asarray(x, dtype=np.uint8)
 
-    obs = cv2.cvtColor(frame[:672, ...], cv2.COLOR_BGRA2GRAY)
-
-    observation_space = gym.spaces.Box(low=0, high=255, dtype=np.uint8, shape=(1,) + (160, 160))
-    obs = cv2.resize(obs, dsize=observation_space.shape[1:], interpolation=cv2.INTER_AREA)
-
-    # make channel first
-    obs = obs[np.newaxis, ...]
-
-    print(obs.shape)
-
-    cv2.imshow('x', obs[0])
+    knight_hp_bar = frame[:, :, 0]
+    # checkpoint1 = knight_hp_bar[HP_CKPT]
+    # checkpoint2 = knight_hp_bar[HP_CKPT - 1]
+    print(knight_hp_bar)
+    cv2.imshow('x', knight_hp_bar)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-    print(obs)
 
-from collections import deque
+
 if __name__ == '__main__':
-    test()
+    test_input_img()
