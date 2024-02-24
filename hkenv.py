@@ -382,8 +382,8 @@ class HKEnvBV(HKEnv):
 # 白给守卫的环境
 class HKEnvCG(HKEnv):
     REWMAPS = {  # map each action to its corresponding reward
-        Move.HOLD_LEFT: -1e-4,
-        Move.HOLD_RIGHT: -1e-4,
+        Move.HOLD_LEFT: 1e-4,
+        Move.HOLD_RIGHT: 1e-4,
         # Move.LOOK_LEFT: 0,
         # Move.LOOK_RIGHT: 0,
         Displacement.TIMED_SHORT_JUMP: -1e-1,
@@ -408,15 +408,16 @@ class HKEnvCG(HKEnv):
         checkpoint1 = knight_hp_bar[self.HP_CKPT]
         checkpoint2 = knight_hp_bar[self.HP_CKPT - 1]
         knight_hp = ((checkpoint1 > 200) | (checkpoint2 > 200)).sum()
-
         if knight_hp == 0:
-            time.sleep(0.05)
+            time.sleep(1.5)
             with mss() as sct:
                 frame = np.asarray(sct.grab(self.monitor), dtype=np.uint8)
             knight_hp_bar = frame[64, :, 0]
             checkpoint1 = knight_hp_bar[self.HP_CKPT]
             checkpoint2 = knight_hp_bar[self.HP_CKPT - 1]
             knight_hp = ((checkpoint1 > 200) | (checkpoint2 > 200)).sum()
+            if knight_hp == 9:
+                knight_hp = 0
 
         enemy_hp_bar = frame[-1, 187:826, :]
         if (np.all(enemy_hp_bar[..., 0] == enemy_hp_bar[..., 1]) and
@@ -436,6 +437,22 @@ class HKEnvCG(HKEnv):
         # make channel first
         obs = np.rollaxis(obs, -1) if rgb else obs[np.newaxis, ...]
         return obs, knight_hp, enemy_hp
+
+
+# 假骑士的环境
+class HKEnvFK(HKEnvCG):
+    REWMAPS = {  # map each action to its corresponding reward
+        Move.HOLD_LEFT: 0,
+        Move.HOLD_RIGHT: 0,
+        # Move.LOOK_LEFT: 0,
+        # Move.LOOK_RIGHT: 0,
+        Displacement.TIMED_SHORT_JUMP: 0,
+        Displacement.TIMED_LONG_JUMP: 0,
+        Displacement.DASH: 1e-3,
+        Attack.ATTACK: 1e-3,
+        Attack.UP_ATTACK: -1e-1,
+        Attack.SPELL: -1e-1
+    }
 
 
 class HKEnvV2(HKEnv):

@@ -1,0 +1,27 @@
+C:\ProgramData\miniconda3\envs\HollowKnightAI\python.exe C:\Projects\Python\HollowKnight_RL\evaluate.py 
+4 linear layers parameter reset successfully
+finished 10 times
+finished 20 times
+finished 30 times
+finished 40 times
+finished 50 times
+finished 60 times
+finished 70 times
+finished 80 times
+finished 90 times
+finished 100 times
+rewards: 20.208813, win times: 100
+4 linear layers parameter reset successfully
+finished 10 times
+finished 20 times
+finished 30 times
+finished 40 times
+finished 50 times
+finished 60 times
+finished 70 times
+finished 80 times
+finished 90 times
+finished 100 times
+rewards: 19.718064, win times: 98
+
+Process finished with exit code 0

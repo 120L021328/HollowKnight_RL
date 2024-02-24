@@ -33,7 +33,7 @@ def get_model(env: gym.Env, n_frames: int, file_path=''):
 def train(dqn, old_path=''):
     print('training started')
     if not len(old_path):
-        dqn.save_explorations(800)
+        dqn.save_explorations(1)
     dqn.load_explorations(old_path)
     # dqn.load_explorations('saved/1673839254HornetTweaks/transitions')
     # raise ValueError
@@ -45,7 +45,7 @@ def train(dqn, old_path=''):
     win_episode = []
     best_train_update = []
     best_update = []
-    for i in range(1, 2001):
+    for i in range(1, 501):
         print('episode', i)
         rew, loss, lr, w = dqn.run_episode()
         if w:
@@ -83,9 +83,9 @@ def train(dqn, old_path=''):
 
 
 def main():
-    # old_model_path = 'saved/1702722179Hornet/'
+    # old_model_path = 'saved/1707617125BV/'
     n_frames = 4
-    env = hkenv.HKEnv((160, 160), rgb=False, gap=0.165, w1=0.8, w2=0.8, w3=-0.0001)
+    env = hkenv.HKEnvFK((160, 160), rgb=False, gap=0.165, w1=0.8, w2=0.8, w3=-0.0001)
     # env = hkenv.HKEnvV2((192, 192), rgb=False, gap=0.17, w1=0.8, w2=0.5, w3=-8e-5)
     # m = get_model(env, n_frames, old_model_path + 'bestonline.pt')
     m = get_model(env, n_frames)
@@ -112,7 +112,7 @@ def main():
                           svea=False,
                           reset=0,  # no reset
                           n_targets=1,
-                          save_suffix='BV',
+                          save_suffix='FK',
                           no_save=False)
     # train(dqn, old_model_path + 'explorations/')
     train(dqn)

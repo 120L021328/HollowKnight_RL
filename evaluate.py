@@ -9,8 +9,8 @@ import buffer
 
 DEVICE = 'cuda'
 cudnn.benchmark = True
-test_path_list = ['saved/1706535946BM/besttrainonline.pt',
-                  'saved/1706535946BM/bestonline.pt']
+test_path_list = ['saved/1707792501CG/besttrainonline.pt',
+                  'saved/1707792501CG/bestonline.pt']
 
 
 def get_model(env: gym.Env, n_frames: int, file_path=''):
@@ -37,7 +37,7 @@ def get_model(env: gym.Env, n_frames: int, file_path=''):
 def main(p):
     n = 100  # test times
     n_frames = 4
-    env = hkenv.HKEnv((160, 160), rgb=False, gap=0.165, w1=1, w2=1, w3=0)
+    env = hkenv.HKEnvCG((160, 160), rgb=False, gap=0.165, w1=1, w2=1, w3=0)
     # env = hkenv.HKEnv((192, 192), rgb=False, gap=0.165, w1=1, w2=1, w3=0)
     # env = hkenv.HKEnvV2((192, 192), rgb=False, gap=0.17, w1=0.8, w2=0.5, w3=-8e-5)
     m = get_model(env, n_frames, p)
