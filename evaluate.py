@@ -9,8 +9,8 @@ import buffer
 
 DEVICE = 'cuda'
 cudnn.benchmark = True
-test_path_list = ['saved/1707792501CG/besttrainonline.pt',
-                  'saved/1707792501CG/bestonline.pt']
+test_path_list = ['saved/1708771294CG/besttrainonline.pt',
+                  'saved/1708771294CG/bestonline.pt']
 
 
 def get_model(env: gym.Env, n_frames: int, file_path=''):
