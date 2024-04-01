@@ -56,7 +56,7 @@ def train(dqn):
 
 def main():
     n_frames = 1
-    env = gym.make('CartPole-v0')
+    env = gym.make('CartPole-v0', render_mode='human')
     m = get_model(env)
     replay_buffer = buffer.MultistepBuffer(500000, n=12, gamma=0.99,
                                            prioritized={

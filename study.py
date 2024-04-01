@@ -15,6 +15,7 @@ cudnn.benchmark = True
 
 def get_model(env: gym.Env, n_frames: int, file_path=''):
     c, *shape = env.observation_space.shape
+    print(shape)
     m = models.SimpleExtractor(shape, n_frames * c,
                                activation='relu', sn=False)
     m = models.DuelingMLP(m, env.action_space.n,
@@ -78,39 +79,36 @@ def train(dqn, old_path=''):
 
 
 def main():
-    # old_model_path = 'saved/1707617125BV/'
     n_frames = 4
     env = hkenv.HKEnv((160, 160), rgb=False, gap=0.165, w1=0.8, w2=0.8, w3=-0.0001)
-    # env = hkenv.HKEnvV2((192, 192), rgb=False, gap=0.17, w1=0.8, w2=0.5, w3=-8e-5)
-    # m = get_model(env, n_frames, old_model_path + 'bestonline.pt')
     m = get_model(env, n_frames)
-    replay_buffer = buffer.MultistepBuffer(180000, n=10, gamma=0.99, prioritized=None)
-                                           # prioritized={
-                                           #     'alpha': 0.5,
-                                           #     'beta': 0.4,
-                                           #     'beta_anneal': 0.6 / 550.
-                                           # })
-
-    dqn = trainer.Trainer(env=env, replay_buffer=replay_buffer,
-                          n_frames=n_frames, gamma=0.99, eps=0,
-                          eps_func=(lambda val, step: 8000. / step),
-                          target_steps=8000,
-                          learn_freq=4,
-                          model=m,
-                          lr=8e-5,
-                          lr_decay=False,
-                          criterion=torch.nn.MSELoss(),
-                          batch_size=32,
-                          device=DEVICE,
-                          is_double=True,
-                          drq=True,
-                          svea=False,
-                          reset=0,  # no reset
-                          n_targets=1,
-                          save_suffix='BV',
-                          no_save=False)
-    # train(dqn, old_model_path + 'explorations/')
-    train(dqn)
+    # replay_buffer = buffer.MultistepBuffer(180000, n=10, gamma=0.99, prioritized=None)
+    #                                        # prioritized={
+    #                                        #     'alpha': 0.5,
+    #                                        #     'beta': 0.4,
+    #                                        #     'beta_anneal': 0.6 / 550.
+    #                                        # })
+    #
+    # dqn = trainer.Trainer(env=env, replay_buffer=replay_buffer,
+    #                       n_frames=n_frames, gamma=0.99, eps=0,
+    #                       eps_func=(lambda val, step: 8000. / step),
+    #                       target_steps=8000,
+    #                       learn_freq=4,
+    #                       model=m,
+    #                       lr=8e-5,
+    #                       lr_decay=False,
+    #                       criterion=torch.nn.MSELoss(),
+    #                       batch_size=32,
+    #                       device=DEVICE,
+    #                       is_double=True,
+    #                       drq=True,
+    #                       svea=False,
+    #                       reset=0,  # no reset
+    #                       n_targets=1,
+    #                       save_suffix='BV',
+    #                       no_save=False)
+    # # train(dqn, old_model_path + 'explorations/')
+    # train(dqn)
 
 
 if __name__ == '__main__':

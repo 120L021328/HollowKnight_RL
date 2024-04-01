@@ -30,15 +30,15 @@ class Move(Actions):
 class Attack(Actions):
     NO_OP = 0
     ATTACK = 1
-    UP_ATTACK = 2
-    SPELL = 3
+    # UP_ATTACK = 2
+    # SPELL = 3
 
 
 class Displacement(Actions):
     NO_OP = 0
     TIMED_SHORT_JUMP = 1
     TIMED_LONG_JUMP = 2
-    DASH = 3
+    # DASH = 3
 
 
 class HKEnv(gym.Env):
@@ -54,10 +54,10 @@ class HKEnv(gym.Env):
         # Move.LOOK_RIGHT: 'd',
         Displacement.TIMED_SHORT_JUMP: 'k',
         Displacement.TIMED_LONG_JUMP: 'k',
-        Displacement.DASH: 'l',
+        # Displacement.DASH: 'l',
         Attack.ATTACK: 'j',
-        Attack.UP_ATTACK: ('w', 'j'),
-        Attack.SPELL: ('s', 'i')
+        # Attack.UP_ATTACK: ('w', 'j'),
+        # Attack.SPELL: ('s', 'i')
     }
     REWMAPS = {  # map each action to its corresponding reward
         Move.HOLD_LEFT: 0,
@@ -66,10 +66,10 @@ class HKEnv(gym.Env):
         # Move.LOOK_RIGHT: 0,
         Displacement.TIMED_SHORT_JUMP: 0,
         Displacement.TIMED_LONG_JUMP: 0,
-        Displacement.DASH: 0,
+        # Displacement.DASH: 0,
         Attack.ATTACK: 0,
-        Attack.UP_ATTACK: 0,
-        Attack.SPELL: 0
+        # Attack.UP_ATTACK: 0,
+        # Attack.SPELL: 0
     }
     HP_CKPT = np.array([52, 91, 129, 169, 207, 246, 286, 324, 363], dtype=int)
     ACTIONS = [Move, Attack, Displacement]
@@ -361,154 +361,3 @@ class HKEnv(gym.Env):
         self._episode_time = None
         self._prev_time = None
         gc.collect()
-
-
-# 大表哥的环境
-class HKEnvBV(HKEnv):
-    REWMAPS = {  # map each action to its corresponding reward
-        Move.HOLD_LEFT: 0,
-        Move.HOLD_RIGHT: 0,
-        # Move.LOOK_LEFT: 0,
-        # Move.LOOK_RIGHT: 0,
-        Displacement.TIMED_SHORT_JUMP: 0,
-        Displacement.TIMED_LONG_JUMP: 0,
-        Displacement.DASH: 1e-3,
-        Attack.ATTACK: 1e-3,
-        Attack.UP_ATTACK: -1e-2,
-        Attack.SPELL: 1e-3
-    }
-
-
-# 白给守卫的环境
-class HKEnvCG(HKEnv):
-    REWMAPS = {  # map each action to its corresponding reward
-        Move.HOLD_LEFT: 1e-4,
-        Move.HOLD_RIGHT: 1e-4,
-        # Move.LOOK_LEFT: 0,
-        # Move.LOOK_RIGHT: 0,
-        Displacement.TIMED_SHORT_JUMP: -1e-1,
-        Displacement.TIMED_LONG_JUMP: 1e-3,
-        Displacement.DASH: -1e-1,
-        Attack.ATTACK: 1e-3,
-        Attack.UP_ATTACK: -1e-1,
-        Attack.SPELL: 1e-3
-    }
-
-    def observe(self, force_gray=False):
-        """
-        take a screenshot and identify enemy and knight's HP
-
-        :param force_gray: override self.rgb to force return gray obs
-        :return: observation (a resized screenshot), knight HP, and enemy HP
-        """
-        with mss() as sct:
-            frame = np.asarray(sct.grab(self.monitor), dtype=np.uint8)
-
-        knight_hp_bar = frame[64, :, 0]
-        checkpoint1 = knight_hp_bar[self.HP_CKPT]
-        checkpoint2 = knight_hp_bar[self.HP_CKPT - 1]
-        knight_hp = ((checkpoint1 > 200) | (checkpoint2 > 200)).sum()
-        if knight_hp == 0:
-            time.sleep(1.5)
-            with mss() as sct:
-                frame = np.asarray(sct.grab(self.monitor), dtype=np.uint8)
-            knight_hp_bar = frame[64, :, 0]
-            checkpoint1 = knight_hp_bar[self.HP_CKPT]
-            checkpoint2 = knight_hp_bar[self.HP_CKPT - 1]
-            knight_hp = ((checkpoint1 > 200) | (checkpoint2 > 200)).sum()
-            if knight_hp == 9:
-                knight_hp = 0
-
-        enemy_hp_bar = frame[-1, 187:826, :]
-        if (np.all(enemy_hp_bar[..., 0] == enemy_hp_bar[..., 1]) and
-                np.all(enemy_hp_bar[..., 1] == enemy_hp_bar[..., 2])):
-            # hp bar found
-            enemy_hp = (enemy_hp_bar[..., 0] < 3).sum() / len(enemy_hp_bar)
-        else:
-            enemy_hp = 1.
-
-        rgb = not force_gray and self.rgb
-        obs = cv2.cvtColor(frame[:672, ...],
-                           (cv2.COLOR_BGRA2RGB if rgb
-                            else cv2.COLOR_BGRA2GRAY))
-        obs = cv2.resize(obs,
-                         dsize=self.observation_space.shape[1:],
-                         interpolation=cv2.INTER_AREA)
-        # make channel first
-        obs = np.rollaxis(obs, -1) if rgb else obs[np.newaxis, ...]
-        return obs, knight_hp, enemy_hp
-
-
-# 蜂巢骑士的环境
-class HKEnvHK(HKEnv):
-    REWMAPS = {
-        Move.HOLD_LEFT: -1e-4,
-        Move.HOLD_RIGHT: -1e-4,
-        # Move.LOOK_LEFT: 0,
-        # Move.LOOK_RIGHT: 0,
-        Displacement.TIMED_SHORT_JUMP: 0,
-        Displacement.TIMED_LONG_JUMP: 0,
-        Displacement.DASH: 1e-3,
-        Attack.ATTACK: 1e-3,
-        Attack.UP_ATTACK: -1e-1,
-        Attack.SPELL: -1e-1
-    }
-
-
-
-
-
-class HKEnvSurvive(HKEnv):
-    ACTIONS = [Move, Displacement]
-
-    def step(self, actions):
-        t = self.gap - (time.time() - self._prev_time)
-        if t > 0:
-            time.sleep(t)
-        # print(t)
-        self._prev_time = time.time()
-        actions = self._to_multi_discrete(actions)
-        self._step_actions(actions)
-        obs, knight_hp, enemy_hp = self.observe()
-
-        win = self.prev_enemy_hp < enemy_hp
-        lose = knight_hp == 0
-        done = win or lose
-
-        hurt = knight_hp < self.prev_knight_hp
-        self.prev_knight_hp = knight_hp
-
-        rew = (-self.w1) if hurt else (knight_hp / 18. + 0.4)
-        rew = np.clip(rew, -1.5, 1.5)
-        return obs, rew, done, False, win
-
-
-def test_input_img():
-    HP_CKPT = np.array([52, 91, 129, 169, 207, 246, 286, 324, 363], dtype=int)
-    window = pyautogui.getWindowsWithTitle('Hollow Knight')
-    assert len(window) == 1, f'found {len(window)} windows called Hollow Knight {window}'
-    window = window[0]
-    try:
-        window.activate()
-    except Exception:
-        window.minimize()
-        window.maximize()
-        window.restore()
-    window.moveTo(0, 0)
-
-    with mss() as sct:
-        monitor = {'left': 144, 'top': 35, 'width': 1020, 'height': 692}
-        x = sct.grab(monitor)
-        frame = np.asarray(x, dtype=np.uint8)
-
-    knight_hp_bar = frame[:, :, 0]
-    # checkpoint1 = knight_hp_bar[HP_CKPT]
-    # checkpoint2 = knight_hp_bar[HP_CKPT - 1]
-    print(knight_hp_bar)
-    cv2.imshow('x', knight_hp_bar)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-
-
-if __name__ == '__main__':
-    test_input_img()

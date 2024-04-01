@@ -9,37 +9,25 @@ import buffer
 
 DEVICE = 'cuda'
 cudnn.benchmark = True
-test_path_list = ['saved/1708771294CG/besttrainonline.pt',
-                  'saved/1708771294CG/bestonline.pt']
+# modify below path to the weight file you have
+test_path_list = ['saved/1702905513Hornet/bestonline.pt',
+                  'saved/1702722179Hornet/bestonline.pt'
+                  ]
 
 
 def get_model(env: gym.Env, n_frames: int, file_path=''):
     c, *shape = env.observation_space.shape
     m = models.SimpleExtractor(shape, n_frames * c)
     m = models.DuelingMLP(m, env.action_space.n, noisy=True)
-
     m = m.to(DEVICE)
-
-    # modify below path to the weight file you have
-    # tl = torch.load('saved/1673754862HornetPER/bestmodel.pt')
-    # tl = torch.load('saved/1702297388HornetV2/bestonline.pt')
-    # tl = torch.load('saved/1702722179Hornet/besttrainonline.pt')
-    tl = torch.load(file_path)
-
-    missing, unexpected = m.load_state_dict(tl, strict=False)
-    if len(missing):
-        print('miss:', missing)
-    if len(unexpected):
-        print('unexpected:', unexpected)
+    m.load_state_dict(torch.load(file_path))
     return m
 
 
 def main(p):
-    n = 100  # test times
+    n = 1  # test times
     n_frames = 4
-    env = hkenv.HKEnvCG((160, 160), rgb=False, gap=0.165, w1=1, w2=1, w3=0)
-    # env = hkenv.HKEnv((192, 192), rgb=False, gap=0.165, w1=1, w2=1, w3=0)
-    # env = hkenv.HKEnvV2((192, 192), rgb=False, gap=0.17, w1=0.8, w2=0.5, w3=-8e-5)
+    env = hkenv.HKEnv((160, 160), rgb=False, gap=0.165, w1=1, w2=1, w3=0)
     m = get_model(env, n_frames, p)
     replay_buffer = buffer.MultistepBuffer(100000, n=10, gamma=0.99)
     dqn = trainer.Trainer(env=env, replay_buffer=replay_buffer,
